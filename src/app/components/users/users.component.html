@@ -1,0 +1,68 @@
+<div class="container">
+  <h2>Users Management</h2>
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="user-form">
+    <div class="form-group">
+      <input type="text" matInput name="name"   formControlName="name"  placeholder="enter user name" id="name" class="form-group">
+      <div *ngIf="userForm.get('name')?.invalid && userForm.get('name')?.touched" class="error text-danger">
+        Name is Required
+      </div>
+    </div>
+
+    <div class="form-group">
+      <input type="email" name="email" formControlName="email"  placeholder="enter user email" id="email" class="form-group">
+      <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="error text-danger">
+        valid email is Required
+      </div>
+    </div>
+
+    <div class="form-group">
+      <input type="password" name="password" formControlName="password"  placeholder="enter user password" id="password" class="form-group">
+      <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched" class="error text-danger">
+        Password must be at least 6 characters
+      </div>
+    </div>
+
+      <div class="form-group">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" formControlName="role"  checked  value="Project manager" name="role" id="Project manager" >
+          <label class="form-check-label" for="Project manager">
+            Project manager
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" formControlName="role" value="Developer" name="role" id="Developer"  >
+          <label class="form-check-label" for="Developer">
+            Developer
+          </label>
+        </div>    
+      </div>
+
+    <div *ngIf="ErrorMessage!=''" class="text-danger">{{ErrorMessage}}    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid">
+      {{ isEditing ?'update user':'Add user' }}
+    </button>
+    <button type="reset" class="btn btn-secondary">reset</button>
+  </form>
+  <!-- Users Table -->
+  <table class="users-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>
+          <button (click)="editUser(user)" class="btn btn-edit">Edit</button>
+          <button (click)="deleteUser(user._id!.toString())" class="btn btn-delete">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

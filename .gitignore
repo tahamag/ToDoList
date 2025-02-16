@@ -40,3 +40,10 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# backend
+
+/backend/.vscode
+/backend/node_modules
+/backend/package.json
+/backend/package-lock.json
