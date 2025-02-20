@@ -1,0 +1,54 @@
+<h2 mat-dialog-title class="text-primary text-center title">Add Task</h2>
+
+<form class="form"  [formGroup]="taskForm">
+
+  <mat-form-field class="formField">
+    <mat-label>Title</mat-label>
+    <input type="text" matInput formControlName="title"   [errorStateMatcher]="matcher"  placeholder="task title">
+    @if (taskForm.get("title")?.hasError('required')) {
+      <mat-error>title is <strong>required</strong></mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field class="formField">
+    <mat-label>Description</mat-label>
+    <textarea formControlName="description"  matInput placeholder="task description"></textarea>
+  </mat-form-field>
+
+  <mat-form-field  class="formField">
+    <mat-label>Task Date</mat-label>
+    <input matInput [matDatepicker]="date"  [errorStateMatcher]="matcher"   formControlName="taskDate"  >
+    <mat-hint>DD/MM/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="date"></mat-datepicker-toggle>
+    <mat-datepicker #date disabled="false"></mat-datepicker>
+    @if (taskForm.get("taskDate")?.hasError('required')) {
+      <mat-error>task date is <strong>required</strong></mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field class="formField">
+    <mat-label>status</mat-label>
+    <input type="text" matInput formControlName="status"  [errorStateMatcher]="matcher"  placeholder="Task status">
+    @if (taskForm.get("status")?.hasError('required')) {
+      <mat-error>status is <strong>required</strong></mat-error>
+    }
+  </mat-form-field>
+
+
+  <mat-form-field class="formField">
+    <mat-label>Developper</mat-label>
+    <input type="text"
+          placeholder="Pick one"
+          aria-label="Number"
+          matInput
+          [formControl]="myControl"
+          [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete">
+      @for (user of filteredOptions | async; track user) {
+        <mat-option [value]="user.id">{{user.name}}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+
+
+</form>
