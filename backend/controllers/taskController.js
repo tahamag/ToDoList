@@ -6,8 +6,15 @@ exports.addTasks = async (req, res) => {
     const { title } = req.body;
     const taskExist = await Tasks.findOne({ title });
 
+    if (title.length < 4)  {
+      return res.status(401).json({
+          success: false,
+          message: "title must have at least four caracters",
+      });
+    }
+
     if (taskExist) {
-        return res.status(400).json({
+        return res.status(401).json({
             success: false,
             message: "this title already exists",
         });
@@ -20,7 +27,6 @@ exports.addTasks = async (req, res) => {
             tasks,
         });
     } catch (error) {
-        console.log(error);
         res.status(400).json({
             success: false,
             message: error.message,
@@ -48,22 +54,47 @@ exports.getTasks = async (req, res) => {
 };
 
 // Update task
+// task(title, description, taskDate, status, validationDate, user)
 exports.updateTask  = async (req, res) => {
     const { tasksId } = req.params; // Assuming taskId is passed as a URL parameter
-    const { title, description , completed } = req.body; // Get the fields you want to update
+    const { title, description, taskDate, status, validationDate, user} = req.body; // Get the fields you want to update
 
     // Validate input
-    if (!title && !description && !completed) {
-        return res.status(400).json({
+    if (!title) {
+        return res.status(402).json({
             success: false,
-            message: "Please provide at least one field to update (title, description , completed).",
+            message: "Please provide title to modify",
+        });
+    }
+    if ( !description ) {
+        return res.status(402).json({
+            success: false,
+            message: "Please provide description to modify.",
+        });
+    }
+    if (!status) {
+        return res.status(402).json({
+            success: false,
+            message: "Please provide valid status to modify.",
+        });
+    }
+    if (!user) {
+        return res.status(402).json({
+            success: false,
+            message: "Please provide valid user.",
+        });
+    }
+    if (!validationDate) {
+        return res.status(402).json({
+            success: false,
+            message: "Please provide validation Date.",
         });
     }
 
     try {
         const updatedTask  = await Tasks.findByIdAndUpdate(
             tasksId,
-            { title, description , completed }, // Update fields
+            { title, description , taskDate, status, validationDate, user }, // Update fields
             { new: true, runValidators: true } // Return the updated document and run validators
         );
 
@@ -79,7 +110,6 @@ exports.updateTask  = async (req, res) => {
             task: updatedTask ,
         });
     } catch (error) {
-        console.log(error);
         res.status(400).json({
             success: false,
             message: error.message,
@@ -90,11 +120,11 @@ exports.updateTask  = async (req, res) => {
 // Update task status
 exports.updateTaskStatus  = async (req, res) => {
     const { tasksId } = req.params; // Assuming taskId is passed as a URL parameter
-    const { completed } = req.body; // Get the fields you want to update
+    const { status } = req.body; // Get the fields you want to update
 
     // Validate input
-    if (!completed) {
-        return res.status(400).json({
+    if (!status) {
+        return res.status(402).json({
             success: false,
             message: "Please provide status to update",
         });
@@ -103,7 +133,7 @@ exports.updateTaskStatus  = async (req, res) => {
     try {
         const updatedTask  = await Tasks.findByIdAndUpdate(
             tasksId,
-            { completed }, // Update fields
+            { status }, // Update fields
             { new: true, runValidators: true } // Return the updated document and run validators
         );
 
@@ -119,7 +149,6 @@ exports.updateTaskStatus  = async (req, res) => {
             task: updatedTask ,
         });
     } catch (error) {
-        console.log(error);
         res.status(400).json({
             success: false,
             message: error.message,
@@ -146,8 +175,7 @@ exports.deleteTask  = async (req, res) => {
             message: "Task  deleted successfully",
         });
     } catch (error) {
-        console.log(error);
-        res.status(400).json({
+        res.status(401).json({
             success: false,
             message: error.message,
         });

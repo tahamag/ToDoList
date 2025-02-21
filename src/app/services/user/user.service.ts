@@ -19,6 +19,10 @@ export class UserService {
     return this.http.get(this.apiUrl + '/users')
   }
 
+  getDeveloppers():Observable<any>{
+    return this.http.get(this.apiUrl + '/developper')
+  }
+
   createUser (user : User) : Observable<any>{
     return this.http.post(this.apiUrl + '/signup', user)
   }

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const taskSchema = mongoose.Schema(
     {
-        // task(title, description, completed)
+        // task(title, description, taskDate, status, validationDate, user)
         title :{
             type : String,
             trim: true,
@@ -14,10 +14,23 @@ const taskSchema = mongoose.Schema(
             type : String,
             trim: true,
         },
-        completed :{
-            type : Boolean,
-            default : false,
+        taskDate:{
+          type : Date,
+          default : Date.now,
         },
+        status :{
+          type : String,
+          default : 'pending',
+          enum: ['pending', 'in-progress', 'completed']
+        },
+        validationDate:{
+          type:Date,
+          default : null
+        },
+        user:{
+          type : mongoose.Schema.Types.ObjectId,
+          ref : 'User',
+        }
     },
     {
         timestamps :true,

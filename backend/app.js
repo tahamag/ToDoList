@@ -12,7 +12,7 @@ const DbUri = process.env.mongoDbUri
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 
-    
+
 // Enable CORS for all routes
 app.use(cors({
     origin: 'http://localhost:4200', // Allow requests from Angular app
@@ -34,6 +34,8 @@ app.get('/signin', userController.signin);
 // Route for get all users
 app.get('/users', userController.getUsers);
 
+app.get('/developper', userController.getDeveloppers);
+
 
 // Route for updating user
 app.put('/users/:userId', userController.updateUser );
@@ -43,7 +45,7 @@ app.delete('/users/:userId', userController.deleteUser );
 
 
 // Route for add tasks
-app.post('/tasks/add', taskController.addTasks);
+app.post('/tasks', taskController.addTasks);
 
 // Route for add tasks
 app.get('/tasks', taskController.getTasks);

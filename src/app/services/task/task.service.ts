@@ -13,21 +13,15 @@ export class TaskService {
   tasks = signal<Task[]>([]);
   users = signal<User[]>([]);
 
-  constructor(private http :HttpClient ) {
-    this.loadTasks();
-    this.loadUsers();
+  constructor(private http :HttpClient ) { }
+
+  getTasks():Observable<Task[]> {
+    return this.http.get<Task[]>(this.apiUrl+"/tasks");
   }
 
-  private loadTasks() {
-    this.http.get<Task[]>(this.apiUrl+"/tasks").subscribe((tasks)=> this.tasks.set(tasks))
-  }
-
-  private loadUsers() {
-    this.http.get<User[]>(this.apiUrl+"/users").subscribe((users)=> this.users.set(users))
-  }
 
   addTask(task: Omit<Task , "id">): Observable<Task>{
-    return this.http.post<Task>(this.apiUrl+"/Tasks" , task).pipe(
+    return this.http.post<Task>(this.apiUrl+"/tasks" , task).pipe(
       tap((newTask)=>{
         this.tasks.update((tasks)=>[...tasks , newTask])
       }),

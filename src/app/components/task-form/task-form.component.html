@@ -1,6 +1,6 @@
-<h2 mat-dialog-title class="text-primary text-center title">Add Task</h2>
+<h2 mat-dialog-title class="text-primary text-center title" >Add Task</h2>
 
-<form class="form"  [formGroup]="taskForm">
+<form class="form" (ngSubmit)="onSubmit()"  [formGroup]="taskForm">
 
   <mat-form-field class="formField">
     <mat-label>Title</mat-label>
@@ -32,6 +32,9 @@
     @if (taskForm.get("status")?.hasError('required')) {
       <mat-error>status is <strong>required</strong></mat-error>
     }
+    @if(taskForm.get('status')?.hasError('statusInvalid')){
+      <mat-error>status must be : <strong>pending</strong></mat-error>
+    }
   </mat-form-field>
 
 
@@ -39,16 +42,34 @@
     <mat-label>Developper</mat-label>
     <input type="text"
           placeholder="Pick one"
-          aria-label="Number"
-          matInput
+          matInput [errorStateMatcher]="matcher"
           [formControl]="myControl"
           [matAutocomplete]="auto">
-    <mat-autocomplete #auto="matAutocomplete">
+    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
       @for (user of filteredOptions | async; track user) {
-        <mat-option [value]="user.id">{{user.name}}</mat-option>
+        <mat-option [value]="user">{{user.name}}</mat-option>
       }
     </mat-autocomplete>
+    @if(isControlInvalid()){
+      <mat-hint class="text-danger">Developper is  <strong>Not found</strong></mat-hint>
+    }
+
+    @if(ErrorMessage != ''){
+      <mat-hint  class="text-danger"><strong>{{ErrorMessage}}</strong></mat-hint>
+    }
   </mat-form-field>
 
+  <div  class="actions">
+    <button mat-button type="button"
+            class="cancel-button">
+      Cancel
+    </button>
+    <button mat-raised-button color="primary"
+            type="submit"
+            [disabled]="!taskForm.valid"
+            class="submit-button">
+      Create
+    </button>
+  </div>
 
 </form>

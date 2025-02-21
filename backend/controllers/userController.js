@@ -24,7 +24,7 @@ exports.signup = async (req, res) => {
     if(role !="Project manager" && role!='Developer'){
         return res.status(402).json({
             success: false,
-            message: "Role should be Project manager or Developer",     
+            message: "Role should be Project manager or Developer",
         });
     }
 
@@ -102,13 +102,32 @@ exports.signin = async (req, res) => {
     }
 };
 
+//get developpers
+exports.getDeveloppers = async (req, res) => {
+
+  try {
+      const user  = await User.find()
+                              .select('_id name')
+                              .where('role').equals('Developer');;
+      res.status(201).json({
+          success: true,
+          user,
+      });
+  } catch (error) {
+      res.status(400).json({
+          success: false,
+          message: error.message,
+      });
+  }
+};
+
 // Update User
 exports.updateUser  = async (req, res) => {
     const { userId } = req.params; // Assuming userId is passed as a URL parameter
-    const { email, name , password } = req.body; // Get the fields you want to update
+    const { email, name , password , role } = req.body; // Get the fields you want to update
 
     // Validate input
-    if (!email && !name && !password) {
+    if (!email && !name && !password && !role) {
         return res.status(400).json({
             success: false,
             message: "Please provide at least one field to update (email, name or password).",
@@ -118,7 +137,7 @@ exports.updateUser  = async (req, res) => {
     try {
         const updatedUser  = await User.findByIdAndUpdate(
             userId,
-            { email, name , password }, // Update fields
+            { email, name , password , role}, // Update fields
             { new: true, runValidators: true } // Return the updated document and run validators
         );
 

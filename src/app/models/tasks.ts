@@ -5,11 +5,11 @@ export interface Task {
   taskDate: Date
   status: "pending" | "in-progress" | "completed"
   validationDate: Date
-  userId: number
+  userId: string
 }
 
 export interface User {
-  id: number
+  _id: string
   name: string
 }
 

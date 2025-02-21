@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { TaskService } from './../../services/task/task.service';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +9,8 @@ import {MatGridListModule} from '@angular/material/grid-list';
 import {MatTableModule} from '@angular/material/table';
 import { TaskFormComponent } from '../task-form/task-form.component';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import { Task } from '../../models/tasks';
+import { BehaviorSubject } from 'rxjs';
 
 export interface PeriodicElement {
   name: string;
@@ -43,7 +46,9 @@ const ELEMENT_DATA: PeriodicElement[] = [
   styleUrl: './task.component.css'
 })
 
-export class TaskComponent {
+export class TaskComponent implements OnInit  {
+
+  //TaskService = inject(TaskService)
 
   displayedColumns: string[] = ['position', 'name', 'weight',"Action"];
   dataSource = ELEMENT_DATA;
@@ -55,6 +60,34 @@ export class TaskComponent {
       width: '600px',
     });
   }
+  task = signal<Task[]>([])
+
+  private tasksSubject = new BehaviorSubject<Task[]>([]);
+  tasks$ = this.tasksSubject.asObservable();
+
+  constructor(private TaskService : TaskService){}
+  ngOnInit(): void {
+    this.getTasks();
+  }
+
+  getTasks(){
+    this.TaskService.getTasks().subscribe({
+      next :(response : any)=>{
+        /*this.task.set(response.tasks)
+        console.log(response.tasks)
+        console.log(this.task)*/
+
+        this.tasksSubject.next(response.tasks);
+        console.log(response.tasks);
+        console.log(this.tasksSubject.getValue());
+      },
+      error:(err : any)=>{
+        console.log(err.error);
+      }
+    })
+  }
+
+
   /*
     openTaskDialog(task?: Task) {
     const dialogRef = this.dialog.open(TaskDialogComponent, {
