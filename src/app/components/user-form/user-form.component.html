@@ -1,0 +1,56 @@
+
+<h2 mat-dialog-title class="text-primary text-center title" >
+    {{isEditing ? 'Update Task' :'Add Task'}}
+</h2>
+
+<form class="form" (ngSubmit)="onSubmit()"  [formGroup]="UserForm">
+    <!--   name  email  password role  -->
+    <mat-form-field class="formField">
+        <mat-label>Name</mat-label>
+        <input type="text" matInput formControlName="name"   [errorStateMatcher]="matcher"  placeholder="user name">
+        @if (UserForm.get("name")?.hasError('required')) {
+        <mat-error>name is <strong>required</strong></mat-error>
+        }
+    </mat-form-field>
+
+    <mat-form-field class="formField">
+        <mat-label>Email</mat-label>
+        <input type="email" formControlName="email"  matInput [errorStateMatcher]="matcher" placeholder="user email">
+        @if (UserForm.get("email")?.hasError('required')) {
+        <mat-error>email is <strong>required</strong></mat-error>
+        }
+    </mat-form-field>
+
+    <mat-form-field class="formField">
+        <mat-label>Password</mat-label>
+        <input type="password" formControlName="password"  [type]="hide() ? 'password' : 'text'"  matInput [errorStateMatcher]="matcher" placeholder="user password">
+        <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide()">
+        <mat-icon>{{hide() ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        @if (UserForm.get("password")?.hasError('required')) {
+            <mat-error>Password must be at least 6 characters <strong>6 characters</strong></mat-error>
+        }
+    </mat-form-field>
+        
+    <mat-radio-group aria-label="Select an option" formControlName="role"    class="formField">
+        <mat-radio-button checked="true" value="Developer">Developer</mat-radio-button>
+        <mat-radio-button value="Project manager">Project manager</mat-radio-button>
+    </mat-radio-group>
+        @if(ErrorMessage != ''){
+        <mat-error class="text-danger formField "><strong>{{ErrorMessage}}</strong></mat-error>
+        }   
+    <div  class="actions">
+        <button mat-button type="button"
+                class="cancel-button"  
+                (click)="onCancel()">
+        Cancel
+        </button>
+        <button mat-raised-button color="primary"
+                type="submit"
+                [disabled]="!UserForm.valid"
+                class="submit-button">
+        {{isEditing ? 'Update' :'Create'}}
+        </button>
+    </div>
+
+</form>

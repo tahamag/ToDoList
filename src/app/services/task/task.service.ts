@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { Task } from '../../models/tasks';
 import { User } from '../../models/user';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, catchError, map, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,37 +10,45 @@ import { Observable, tap } from 'rxjs';
 export class TaskService {
 
   private apiUrl = 'http://localhost:5500';
-  tasks = signal<Task[]>([]);
+  public tasks$ = signal<Task[]>([]);
   users = signal<User[]>([]);
 
   constructor(private http :HttpClient ) { }
-
-  getTasks():Observable<Task[]> {
-    return this.http.get<Task[]>(this.apiUrl+"/tasks");
+  
+  getTasks(): Observable<Task> {
+    return this.http.get<Task>(`${this.apiUrl}/tasks`)
+    .pipe(
+      map((tasks : Task)=>tasks),
+      catchError((error)=>{
+        console.error('error tasks service', error)
+        return throwError(() => error);
+      }),
+    )
   }
 
 
   addTask(task: Omit<Task , "id">): Observable<Task>{
+      console.log(task)
     return this.http.post<Task>(this.apiUrl+"/tasks" , task).pipe(
       tap((newTask)=>{
-        this.tasks.update((tasks)=>[...tasks , newTask])
+        this.tasks$.update((tasks)=>[...tasks , newTask])
       }),
     )
   }
 
-  updateTask(p0: number, task: Task): Observable<Task>{
-    return this.http.put<Task>(this.apiUrl+"/task"+task.id, task).pipe(
+  updateTask(task: Task): Observable<Task>{
+    return this.http.put<Task>(this.apiUrl+"/tasks/"+task._id, task).pipe(
       tap((updatedTask)=>{
-        this.tasks.update((tasks) => tasks.map((t) => (t.id === updatedTask.id ? updatedTask : t)))
+        this.tasks$.update((tasks) => tasks.map((t) => (t._id === updatedTask._id ? updatedTask : t)))
       }),
     )
   }
 
-  deleteTask(id : number) : Observable<void>{
-    return this.http.delete<void>(this.apiUrl+"/task"+id).pipe
+  deleteTask(id : string) : Observable<void>{
+    return this.http.delete<void>(this.apiUrl+"/tasks/"+id).pipe
     (
       tap(() => {
-        this.tasks.update((tasks)=>tasks.filter((t) => t.id !==id))
+        this.tasks$.update((tasks)=>tasks.filter((t) => t._id !==id))
       }),
     )
   }

@@ -1,4 +1,6 @@
-<h2 mat-dialog-title class="text-primary text-center title" >Add Task</h2>
+<h2 mat-dialog-title class="text-primary text-center title" >
+  {{isEditing ? 'Update Task' :'Add Task'}}
+</h2>
 
 <form class="form" (ngSubmit)="onSubmit()"  [formGroup]="taskForm">
 
@@ -39,7 +41,7 @@
 
 
   <mat-form-field class="formField">
-    <mat-label>Developper</mat-label>
+    <mat-label>Developer</mat-label>
     <input type="text"
           placeholder="Pick one"
           matInput [errorStateMatcher]="matcher"
@@ -61,14 +63,15 @@
 
   <div  class="actions">
     <button mat-button type="button"
-            class="cancel-button">
+            class="cancel-button"  
+            (click)="onCancel()">
       Cancel
     </button>
     <button mat-raised-button color="primary"
             type="submit"
             [disabled]="!taskForm.valid"
             class="submit-button">
-      Create
+      {{isEditing ? 'Update' :'Create'}}
     </button>
   </div>
 

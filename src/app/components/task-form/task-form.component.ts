@@ -1,16 +1,18 @@
-import {ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, FormGroupDirective, FormsModule, NgForm, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ErrorStateMatcher, MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
-import { map, Observable, of, startWith, take } from 'rxjs';
+import { map, Observable, startWith } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { Task, User } from '../../models/tasks';
 import { TaskService } from '../../services/task/task.service';
 import { UserService } from '../../services/user/user.service';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialogRef } from '@angular/material/dialog';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 
 @Component({
@@ -38,11 +40,12 @@ export class TaskFormComponent implements OnInit {
 
   users : User[] = [];
   task : Task[] = [];
-  taskForm : FormGroup;
-  userForm : FormGroup;
+  taskForm : FormGroup; 
   isEditing = false;
-  CurrentUserId !: number;
+  CurrentTaskId !: string;
   ErrorMessage : string = "";
+
+  readonly dialogRef = inject(MatDialogRef<TaskFormComponent>);
 
   myControl = new FormControl<string | User>('');
   filteredOptions!: Observable<User[]>;
@@ -50,10 +53,6 @@ export class TaskFormComponent implements OnInit {
 
   ngOnInit() {
     this.loadUsers();
-
-   // this.taskForm.get("status")?.disable();
-   // this.taskForm.get("taskDate")?.disable();
-
     this.filteredOptions = this.myControl.valueChanges.pipe(
       startWith(''),
       map(value => {
@@ -64,7 +63,7 @@ export class TaskFormComponent implements OnInit {
   }
 
   loadUsers() {
-    this.UserService.getDeveloppers().subscribe({
+    this.UserService.getDevelopers().subscribe({
       next: (response : any) => {
         this.users = response.user;
       },
@@ -87,22 +86,32 @@ export class TaskFormComponent implements OnInit {
     private TaskService : TaskService,
     private UserService : UserService,
     private fb : FormBuilder,
-    private fbuser : FormBuilder,
+    @Inject(MAT_DIALOG_DATA) public data: {task: Task ,  developer : User}
   ) {
     this.taskForm = this.fb.group({
       title : ['', [Validators.required]],
       description : [''],
       taskDate : ['',Validators.required],
-      status : ['pending',[Validators.required, this.stautsValidator]],
-      userId :[''],
+      status : ['pending',[Validators.required, this.statusValidator]],
     });
 
-    this.userForm = this.fbuser.group({
-      developer:['',Validators.required],
-    })
-  }
+    if(data && data.task){
+      this.editTask(data.task);
+      this.myControl.setValue(data.developer)
+    }
 
-  stautsValidator(control : AbstractControl) : ValidationErrors | null{
+  }
+  editTask(task : Task):void{
+    this.isEditing = true;
+    this.CurrentTaskId = task._id!;
+    this.taskForm.patchValue({  
+      title : task.title ,
+      description : task.description ,
+      taskDate : task.taskDate ,
+      status : task.status ,
+    });
+  }
+  statusValidator(control : AbstractControl) : ValidationErrors | null{
     return control.value === 'pending' ? null :{statusInvalid:true}
   }
 
@@ -121,24 +130,39 @@ export class TaskFormComponent implements OnInit {
     return false;
 
   }
+
   onSubmit():void{
     if(this.taskForm.invalid)
       return ;
     const task : Task = this.taskForm.value;
     task.userId=(this.myControl.value as User)._id;
-    console.log(task)
+    if(this.isEditing){
+      task._id = this.CurrentTaskId;
+      this.TaskService.updateTask(task).subscribe(()=>{
+        this.onCancel()
+      });
+    }else{
+      this.TaskService.addTask(task).subscribe({
+        next : (response : any)=>{
+          this.onCancel();
+        },
+        error:(err)=> {
+          console.log(err.error)
+          this.ErrorMessage = err.error.message? err.error.message : '';
+        },
+      })
+    }
+  }
 
-    this.TaskService.addTask(task).subscribe({
-      next : (response : any)=>{
-        console.log("added");
-      },
-      error:(err)=> {
-        console.log(err.error)
-        this.ErrorMessage = err.error.message? err.error.message : '';
-      },
-    })
-
-
+  onCancel(){
+    this.resetForm()
+    this.dialogRef.close();
+  }
+  
+  resetForm(): void {
+    this.isEditing = false;
+    this.ErrorMessage = '';
+    this.taskForm.reset();    
   }
 
     matcher = new MyErrorStateMatcher();

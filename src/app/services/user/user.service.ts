@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { User } from './../../models/user';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { User } from '../../models/user';
-import { Observable } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
 
 
 @Injectable({
@@ -11,15 +11,23 @@ import { Observable } from 'rxjs';
 
 export class UserService {
 
-  private apiUrl = 'http://localhost:5500';
+  private apiUrl = 'http://localhost:5500'; 
+  public users$ = signal<User[]>([]);
 
   constructor(private http : HttpClient) { }
 
-  getUsers():Observable<any>{
-    return this.http.get(this.apiUrl + '/users')
+  getUsers():Observable<User>{
+    return this.http.get<User>(`${this.apiUrl}/users`)
+    .pipe(
+      map((user : User)=>user),
+      catchError((error)=>{
+        console.log('get users error ',error)
+        return throwError(()=> error)
+      })
+    )
   }
 
-  getDeveloppers():Observable<any>{
+  getDevelopers():Observable<any>{
     return this.http.get(this.apiUrl + '/developper')
   }
 

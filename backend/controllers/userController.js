@@ -9,7 +9,7 @@ exports.signup = async (req, res) => {
     const userExist = await User.findOne({ email });
 
     if (userExist) {
-        return res.status(400).json({
+        return res.status(401).json({
             success: false,
             message: "E-mail already exists",
         });
@@ -20,9 +20,9 @@ exports.signup = async (req, res) => {
             message: "Password must contain at least 1 uppercase letter, 1 lowercase letter, at least 6 characters length",
         });
     }
-    console.log(role)
+    
     if(role !="Project manager" && role!='Developer'){
-        return res.status(402).json({
+        return res.status(401).json({
             success: false,
             message: "Role should be Project manager or Developer",
         });
@@ -47,7 +47,6 @@ exports.signup = async (req, res) => {
 exports.getUsers = async (req, res) => {
 
     try {
-        // Verify user password
         const user  = await User.find();
         res.status(201).json({
             success: true,
@@ -105,39 +104,39 @@ exports.signin = async (req, res) => {
 //get developpers
 exports.getDeveloppers = async (req, res) => {
 
-  try {
-      const user  = await User.find()
-                              .select('_id name')
-                              .where('role').equals('Developer');;
-      res.status(201).json({
-          success: true,
-          user,
-      });
-  } catch (error) {
-      res.status(400).json({
-          success: false,
-          message: error.message,
-      });
-  }
+    try {
+        const user  = await User.find()
+                                .select('_id name')
+                                .where('role').equals('Developer');;
+        res.status(201).json({
+            success: true,
+            user,
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
 };
 
 // Update User
 exports.updateUser  = async (req, res) => {
     const { userId } = req.params; // Assuming userId is passed as a URL parameter
-    const { email, name , password , role } = req.body; // Get the fields you want to update
+    const { email, name  , role } = req.body; // Get the fields you want to update
 
     // Validate input
-    if (!email && !name && !password && !role) {
-        return res.status(400).json({
+    if (!email && !name  && !role) {
+        return res.status(401).json({
             success: false,
-            message: "Please provide at least one field to update (email, name or password).",
+            message: "Please provide at least one field to update (email, name ).",
         });
     }
 
     try {
         const updatedUser  = await User.findByIdAndUpdate(
             userId,
-            { email, name , password , role}, // Update fields
+            { email, name  , role}, // Update fields
             { new: true, runValidators: true } // Return the updated document and run validators
         );
 

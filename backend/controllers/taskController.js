@@ -7,10 +7,10 @@ exports.addTasks = async (req, res) => {
     const taskExist = await Tasks.findOne({ title });
 
     if (title.length < 4)  {
-      return res.status(401).json({
-          success: false,
-          message: "title must have at least four caracters",
-      });
+        return res.status(401).json({
+            success: false,
+            message: "title must have at least four caracters",
+        });
     }
 
     if (taskExist) {
@@ -38,14 +38,13 @@ exports.addTasks = async (req, res) => {
 exports.getTasks = async (req, res) => {
 
     try {
-        const tasks  = await Tasks.find({});
+        const tasks  = await Tasks.find({}).populate('userId', 'name _id');;
         res.status(201).json({
             success: true,
             tasks,
         });
     }
     catch (error) {
-        console.log(error);
         res.status(400).json({
         success: false,
         message: error.message,
@@ -57,7 +56,7 @@ exports.getTasks = async (req, res) => {
 // task(title, description, taskDate, status, validationDate, user)
 exports.updateTask  = async (req, res) => {
     const { tasksId } = req.params; // Assuming taskId is passed as a URL parameter
-    const { title, description, taskDate, status, validationDate, user} = req.body; // Get the fields you want to update
+    const { title, description, taskDate, status, validationDate, userId} = req.body; // Get the fields you want to update
 
     // Validate input
     if (!title) {
@@ -66,38 +65,25 @@ exports.updateTask  = async (req, res) => {
             message: "Please provide title to modify",
         });
     }
-    if ( !description ) {
-        return res.status(402).json({
-            success: false,
-            message: "Please provide description to modify.",
-        });
-    }
     if (!status) {
         return res.status(402).json({
             success: false,
             message: "Please provide valid status to modify.",
         });
     }
-    if (!user) {
+    if (!userId) {
         return res.status(402).json({
             success: false,
             message: "Please provide valid user.",
-        });
-    }
-    if (!validationDate) {
-        return res.status(402).json({
-            success: false,
-            message: "Please provide validation Date.",
         });
     }
 
     try {
         const updatedTask  = await Tasks.findByIdAndUpdate(
             tasksId,
-            { title, description , taskDate, status, validationDate, user }, // Update fields
+            { title, description , taskDate, status, validationDate, userId }, // Update fields
             { new: true, runValidators: true } // Return the updated document and run validators
         );
-
         if (!updatedTask ) {
             return res.status(404).json({
                 success: false,

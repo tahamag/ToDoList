@@ -1,0 +1,17 @@
+.formField{
+    width: 75%;
+    margin-bottom: .3em;
+    margin-left: 3em;
+    border-radius: 2px;
+  }
+  
+  .title{
+    margin: 1em;
+  }
+  
+  .actions
+  {
+    position: absolute;
+    right: 16%;
+  }
+  
