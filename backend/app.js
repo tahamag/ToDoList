@@ -54,7 +54,7 @@ app.get('/tasks', taskController.getTasks);
 app.put('/tasks/:tasksId', taskController.updateTask);
 
 // Route for update tasks
-app.put('/tasks/status/:tasksId', taskController.updateTaskStatus);
+app.put('/status', taskController.updateTaskStatus);
 
 // route for deleting task
 app.delete('/tasks/:tasksId', taskController.deleteTask);

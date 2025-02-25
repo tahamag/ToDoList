@@ -1,0 +1,51 @@
+.example-container {
+  margin-top: 25%;
+}
+
+.example-list {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-height: 200px;
+  background-color: #f9f9f9;
+  padding: 10px;
+}
+
+.example-box {
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #007bff;
+  border-radius: 4px;
+  background-color: #ffffff;
+  cursor: move;
+  transition: background-color 0.3s;
+}
+
+.example-box:hover {
+  background-color: #e7f1ff;
+}
+
+.box {
+  padding: 20px;
+  background-color: #4CAF50;
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.box:hover {
+  background-color: #45a049;
+}
+
+.formField{
+  width: 90%;
+  margin-bottom: .1em;
+  margin-left: 1em;
+  border-radius: 2px;
+}
+
+.title{
+  margin: 1em;
+}
+

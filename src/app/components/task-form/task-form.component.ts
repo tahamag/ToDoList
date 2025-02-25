@@ -40,7 +40,7 @@ export class TaskFormComponent implements OnInit {
 
   users : User[] = [];
   task : Task[] = [];
-  taskForm : FormGroup; 
+  taskForm : FormGroup;
   isEditing = false;
   CurrentTaskId !: string;
   ErrorMessage : string = "";
@@ -104,7 +104,7 @@ export class TaskFormComponent implements OnInit {
   editTask(task : Task):void{
     this.isEditing = true;
     this.CurrentTaskId = task._id!;
-    this.taskForm.patchValue({  
+    this.taskForm.patchValue({
       title : task.title ,
       description : task.description ,
       taskDate : task.taskDate ,
@@ -158,11 +158,11 @@ export class TaskFormComponent implements OnInit {
     this.resetForm()
     this.dialogRef.close();
   }
-  
+
   resetForm(): void {
     this.isEditing = false;
     this.ErrorMessage = '';
-    this.taskForm.reset();    
+    this.taskForm.reset();
   }
 
     matcher = new MyErrorStateMatcher();

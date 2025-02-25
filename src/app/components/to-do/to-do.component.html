@@ -1,0 +1,93 @@
+<mat-grid-list cols="2" rowHeight="10em">
+  <mat-grid-tile>
+    <h1>To Do Management </h1>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <button mat-raised-button class="btn-add" (click)="Save()" color="primary">Save</button>
+  </mat-grid-tile>
+</mat-grid-list>
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+      <div class="example-container">
+        <h2>pending</h2>
+        <div cdkDropList
+            #todoList="cdkDropList"
+            [cdkDropListData]="pending"
+            [cdkDropListConnectedTo]="[inprogresslist]"
+            class="example-list"
+            (cdkDropListDropped)="drop($event)">
+              @for (item of pending; track item) {
+                <div class="example-box" (click)="Detail(item)" cdkDrag>{{item.title}}</div>
+              }
+        </div>
+      </div>
+    </div>
+    <div class="col-sm">
+      <div class="example-container">
+        <h2>in progress</h2>
+
+        <div
+          cdkDropList
+          #inprogresslist="cdkDropList"
+          [cdkDropListData]="inprogress"
+          [cdkDropListConnectedTo]="[completedList]"
+          class="example-list"
+          (cdkDropListDropped)="drop($event)">
+            @for (item of inprogress; track item) {
+              <div class="example-box" (click)="Detail(item)" cdkDrag>{{item.title}}</div>
+            }
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm">
+      <div class="example-container">
+        <h2>completed</h2>
+          <div
+            cdkDropList
+            #completedList="cdkDropList"
+            [cdkDropListData]="completed"
+            [cdkDropListConnectedTo]="[]"
+            class="example-list"
+            (cdkDropListDropped)="drop($event)">
+              @for (item of completed; track item) {
+                <div class="example-box" (click)="Detail(item)" cdkDrag>{{item.title}}</div>
+              }
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm">
+      <div class="example-container" [formGroup]="taskForm">
+        @if(isVisible){
+          <h2>Detail task : </h2>
+          <div class="example-list" >
+            <mat-form-field class="formField">
+              <mat-label>Title</mat-label>
+              <input type="text" matInput formControlName="title"  >
+            </mat-form-field>
+
+            <mat-form-field class="formField">
+              <mat-label>Description</mat-label>
+              <textarea formControlName="description"   matInput placeholder="task description"></textarea>
+            </mat-form-field>
+
+            <mat-form-field  class="formField">
+              <mat-label>Task Date</mat-label>
+              <input  type="text" matInput  formControlName="taskDate"   >
+            </mat-form-field>
+
+            <mat-form-field class="formField">
+              <mat-label>validation Date</mat-label>
+              <input type="text" matInput formControlName="validationDate" >
+            </mat-form-field>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
