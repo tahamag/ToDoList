@@ -1,3 +1,4 @@
+import { TaskService } from './../../services/task/task.service';
 import { Component, inject, OnInit } from '@angular/core';
 import {
   moveItemInArray,
@@ -7,7 +8,6 @@ import {
 } from '@angular/cdk/drag-drop';
 import {CdkAccordionModule} from '@angular/cdk/accordion';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { TaskService } from '../../services/task/task.service';
 import { BehaviorSubject, take } from 'rxjs';
 import { Task } from '../../models/tasks';
 import { MatButtonModule } from '@angular/material/button';
@@ -64,7 +64,6 @@ export class ToDOComponent  {
         this.pending = this.task$.value.filter(task => task.status === 'pending');
         this.inprogress = this.task$.value.filter(task => task.status === 'in-progress');
         this.completed = this.task$.value.filter(task => task.status === 'completed');
-        console.log(this.pending)
       },
       error:(err : any)=>{
         console.log(err.error);
@@ -95,9 +94,11 @@ export class ToDOComponent  {
     this.isVisible = true;
   }
   Save(){
-    console.log(this.pending)
-    console.log(this.inprogress)
-    console.log("hy")
+    if(this.inprogress)
+      this.TaskService.updateStatus(this.inprogress, "in-progress")
+    if(this.completed)
+      this.TaskService.updateStatus(this.completed,"completed")
+    this.getTasks();
   }
 
   FormatDate(date? : Date ){

@@ -104,35 +104,51 @@ exports.updateTask  = async (req, res) => {
 };
 
 // Update task status
-/*exports.updateTaskStatus  = async (req, res) => {
-    const { tasksId } = req.params; // Assuming taskId is passed as a URL parameter
-    const { status } = req.body; // Get the fields you want to update
+exports.updateTaskStatus = async (req, res) => {
+    console.log("your are in  status update")
+    const { status  } = req.params;
+    const { tasks } = req.body; // Expecting an array of task objects
 
+    console.log(task)
     // Validate input
-    if (!status) {
-        return res.status(402).json({
+    if (!Array.isArray(tasks) || tasks.length === 0) {
+        return res.status(400).json({
             success: false,
-            message: "Please provide status to update",
+            message: "Please provide an array of tasks to update",
         });
     }
 
     try {
-        const updatedTask  = await Tasks.findByIdAndUpdate(
-            tasksId,
-            { status }, // Update fields
-            { new: true, runValidators: true } // Return the updated document and run validators
-        );
+        const updatePromises = tasks.map(async (task) => {
+            const { idTask, validationDate } = task;
 
-        if (!updatedTask ) {
+            // Validate each task object
+            if (!idTask || !status || !validationDate) {
+                throw new Error("Each task must have idTask, status, and validation Date");
+            }
+            // Update the task in the database
+            return await Tasks.findByIdAndUpdate(
+                idTask,
+                { status, validationDate }, // Update fields
+                { new: true, runValidators: true } // Return the updated document and run validators
+            );
+        });
+
+        const updatedTasks = await Promise.all(updatePromises);
+
+        // Filter out any null results (tasks that were not found)
+        const successfulUpdates = updatedTasks.filter(task => task !== null);
+
+        if (successfulUpdates.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: "Task not found",
+                message: "No tasks found to update",
             });
         }
 
         res.status(200).json({
             success: true,
-            task: updatedTask ,
+            tasks: successfulUpdates,
         });
     } catch (error) {
         res.status(400).json({
@@ -140,59 +156,6 @@ exports.updateTask  = async (req, res) => {
             message: error.message,
         });
     }
-};*/
-
-// Update task status
-exports.updateTaskStatus = async (req, res) => {
-  const { tasks } = req.body; // Expecting an array of task objects
-
-  // Validate input
-  if (!Array.isArray(tasks) || tasks.length === 0) {
-      return res.status(400).json({
-          success: false,
-          message: "Please provide an array of tasks to update",
-      });
-  }
-
-  try {
-      const updatePromises = tasks.map(async (task) => {
-          const { idTask, status, validationDate } = task;
-
-          // Validate each task object
-          if (!idTask || !status || !validationDate) {
-              throw new Error("Each task must have idTask, status, and validation Date");
-          }
-
-          // Update the task in the database
-          return await Tasks.findByIdAndUpdate(
-              idTask,
-              { status, validationDate }, // Update fields
-              { new: true, runValidators: true } // Return the updated document and run validators
-          );
-      });
-
-      const updatedTasks = await Promise.all(updatePromises);
-
-      // Filter out any null results (tasks that were not found)
-      const successfulUpdates = updatedTasks.filter(task => task !== null);
-
-      if (successfulUpdates.length === 0) {
-          return res.status(404).json({
-              success: false,
-              message: "No tasks found to update",
-          });
-      }
-
-      res.status(200).json({
-          success: true,
-          tasks: successfulUpdates,
-      });
-  } catch (error) {
-      res.status(400).json({
-          success: false,
-          message: error.message,
-      });
-  }
 };
 
 // Delete task

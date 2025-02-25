@@ -10,7 +10,7 @@ import { Observable, catchError, map, tap, throwError } from 'rxjs';
 export class TaskService {
 
   private apiUrl = 'http://localhost:5500';
-  public tasks$ = signal<Task[]>([]);
+  tasks$ = signal<Task[]>([]);
   users = signal<User[]>([]);
 
   constructor(private http :HttpClient ) { }
@@ -28,7 +28,6 @@ export class TaskService {
 
 
   addTask(task: Omit<Task , "id">): Observable<Task>{
-      console.log(task)
     return this.http.post<Task>(this.apiUrl+"/tasks" , task).pipe(
       tap((newTask)=>{
         this.tasks$.update((tasks)=>[...tasks , newTask])
@@ -42,6 +41,17 @@ export class TaskService {
         this.tasks$.update((tasks) => tasks.map((t) => (t._id === updatedTask._id ? updatedTask : t)))
       }),
     )
+  }
+
+  updateStatus(tasks: Task[], status : string): Observable<any>{
+
+    /**/return this.http.put<Task[]>(this.apiUrl+"/status/"+status, tasks).pipe(
+      tap((updatedTask)=>{
+        console.log(updatedTask)
+        //this.tasks$.update((tasks) => tasks.map((t) => (t._id === updatedTask._id ? updatedTask : t)))
+      }),
+    )
+    
   }
 
   deleteTask(id : string) : Observable<void>{
