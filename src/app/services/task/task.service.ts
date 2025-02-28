@@ -14,7 +14,7 @@ export class TaskService {
   users = signal<User[]>([]);
 
   constructor(private http :HttpClient ) { }
-  
+
   getTasks(): Observable<Task> {
     return this.http.get<Task>(`${this.apiUrl}/tasks`)
     .pipe(
@@ -35,6 +35,11 @@ export class TaskService {
     )
   }
 
+  updateStatus(tasks: any):Observable<any>{
+    console.log("service task : ",tasks)
+    return this.http.put(this.apiUrl + `/status`, tasks)
+  }
+
   updateTask(task: Task): Observable<Task>{
     return this.http.put<Task>(this.apiUrl+"/tasks/"+task._id, task).pipe(
       tap((updatedTask)=>{
@@ -43,16 +48,17 @@ export class TaskService {
     )
   }
 
-  updateStatus(tasks: Task[], status : string): Observable<any>{
 
-    /**/return this.http.put<Task[]>(this.apiUrl+"/status/"+status, tasks).pipe(
+  /* updateStatus(tasks: Task[], status : string): Observable<any>{
+
+    return this.http.put<Task[]>(this.apiUrl+"/status/"+status, tasks).pipe(
       tap((updatedTask)=>{
         console.log(updatedTask)
         //this.tasks$.update((tasks) => tasks.map((t) => (t._id === updatedTask._id ? updatedTask : t)))
       }),
     )
-    
-  }
+
+  }*/
 
   deleteTask(id : string) : Observable<void>{
     return this.http.delete<void>(this.apiUrl+"/tasks/"+id).pipe

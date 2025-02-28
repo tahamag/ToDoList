@@ -11,7 +11,7 @@ import { Observable, catchError, map, throwError } from 'rxjs';
 
 export class UserService {
 
-  private apiUrl = 'http://localhost:5500'; 
+  private apiUrl = 'http://localhost:5500';
   public users$ = signal<User[]>([]);
 
   constructor(private http : HttpClient) { }
@@ -25,6 +25,11 @@ export class UserService {
         return throwError(()=> error)
       })
     )
+  }
+
+  login(user :User ):Observable<any>{
+    console.log(user)
+    return this.http.post<User>(this.apiUrl + '/signin', user)
   }
 
   getDevelopers():Observable<any>{
@@ -42,4 +47,5 @@ export class UserService {
   deleteUser(id :string):Observable<any>{
     return this.http.delete(this.apiUrl + `/users/${id}`)
   }
+
 }

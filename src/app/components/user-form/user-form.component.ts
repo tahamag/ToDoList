@@ -1,4 +1,4 @@
-import { UserService } from './../../services/user/user.service';   
+import { UserService } from './../../services/user/user.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Component, Inject, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormGroupDirective, FormsModule, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -30,7 +30,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class UserFormComponent {
   users : User[] = [];
-  UserForm : FormGroup; 
+  UserForm : FormGroup;
   isEditing = false;
   CurrentUserId !: string;
   ErrorMessage : string = "";
@@ -53,7 +53,7 @@ export class UserFormComponent {
     if(data && data.user){
       this.isEditing = true;
       this.editUser(data.user);
-      
+
     }
 
   }
@@ -63,7 +63,7 @@ export class UserFormComponent {
     this.UserForm.get("password")?.disable();
     this.CurrentUserId = user._id!;
     this.UserForm.patchValue({
-      name : user.name ,  
+      name : user.name ,
       email : user.email,
       role :user.role
     });
@@ -86,7 +86,7 @@ export class UserFormComponent {
         error:(err)=> {
             console.log(err.error);
             this.ErrorMessage = err.error.message;
-        }, 
+        },
       })
     }
   }
@@ -95,11 +95,11 @@ export class UserFormComponent {
     this.resetForm()
     this.dialogRef.close();
   }
-  
+
   resetForm(): void {
     this.isEditing = false;
     this.ErrorMessage = '';
-    this.UserForm.reset();    
+    this.UserForm.reset();
   }
 
   hide = signal(true);

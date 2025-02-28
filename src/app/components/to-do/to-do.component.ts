@@ -37,10 +37,10 @@ export class ToDOComponent  {
   pending :Task[] = [];
   inprogress?: Task[] =[]
   completed?: Task[] =[]
+  test?: Task[] =[]
 
 
     constructor(
-      private TaskService : TaskService,
       private fb : FormBuilder,
     ) {
       this.taskForm = this.fb.group({
@@ -94,14 +94,48 @@ export class ToDOComponent  {
     this.isVisible = true;
   }
   Save(){
-    if(this.inprogress)
-      this.TaskService.updateStatus(this.inprogress, "in-progress")
-    if(this.completed)
-      this.TaskService.updateStatus(this.completed,"completed")
+    if (this.inprogress) {
+      const tasksToUpdate = this.inprogress.map(task => ({
+        _id: task._id,
+        validationDate: task.validationDate,
+        status : "in-progress"
+      }));
+
+      this.TS.updateStatus(tasksToUpdate).subscribe({
+        next : (response : any)=>{
+          console.log('In-progress tasks updated:', response);
+        },
+        error:(err)=> {
+          console.error('Error updating in-progress tasks:', err);
+        }
+      });
+
+
+    }
+
+    if (this.completed) {
+      const tasksToUpdate = this.completed
+      .filter(task => task.validationDate === null)
+      .map(task => ({
+        _id: task._id,
+        validationDate: new Date(),
+        status : "completed"
+      }));
+
+      this.TS.updateStatus(tasksToUpdate).subscribe({
+        next : (response : any)=>{
+          console.log('completed tasks updated:', response);
+        },
+        error:(err)=> {
+          console.error('Error updating completed tasks:', err);
+        }
+      });
+    }
+
     this.getTasks();
   }
 
   FormatDate(date? : Date ){
-    return date? new Date(date).getFullYear() + '/' + new Date(date).getMonth() + '/' + new Date(date).getDay() : ''
+    return date?  new Date(date).getDay() + '/' + new Date(date).getMonth() + '/' + new Date(date).getFullYear()  : ''
   }
 }

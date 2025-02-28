@@ -20,7 +20,7 @@ exports.signup = async (req, res) => {
             message: "Password must contain at least 1 uppercase letter, 1 lowercase letter, at least 6 characters length",
         });
     }
-    
+
     if(role !="Project manager" && role!='Developer'){
         return res.status(401).json({
             success: false,
@@ -61,8 +61,7 @@ exports.getUsers = async (req, res) => {
 };
 //get user
 exports.signin = async (req, res) => {
-
-    try {
+  try {
     const { email , password } = req.body;
     if(!email || !password){
         res.status(400).json({

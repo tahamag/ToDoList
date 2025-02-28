@@ -1,0 +1,73 @@
+<!-- Section: Design Block -->
+<section class="background-radial-gradient overflow-hidden">
+  <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
+    <div class="row gx-lg-5 align-items-center mb-5">
+      <div class="col-lg-6 mb-5 mb-lg-0 side-text">
+        <h1 class="my-5 display-5 fw-bold ls-tight" >
+          The best management <br />
+          <span >for your business</span>
+        </h1>
+        <p class="mb-4 opacity-70 description-text" >
+          Boost your productivity with our powerful to-do management web app. Organize tasks, set priorities, and track progress effortlessly.
+          Perfect for businesses of all sizes, our intuitive platform helps teams stay focused and achieve their goals efficiently.
+        </p>
+      </div>
+
+      <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
+        <div id="radius-shape-1" class="position-absolute rounded-circle shadow-5-strong"></div>
+        <div id="radius-shape-2" class="position-absolute shadow-5-strong"></div>
+
+        <div class="card bg-glass">
+          <div class="card-body px-4 py-5 px-md-5">
+            <form (ngSubmit)="onSubmit()"  [formGroup]="UserForm">
+              <h2 mat-dialog-title class="text-center title"  >
+                Welcome to <br> <strong class="text-primary"> to-do management</strong>
+              </h2>
+              <!-- Email input -->
+              <div data-mdb-input-init class="form-outline mb-4 ">
+                  <mat-form-field class="formField">
+                    <mat-label>Email</mat-label>
+                    <input type="email" matInput formControlName="email" [errorStateMatcher]="matcher" placeholder="your email">
+                    @if (UserForm.get("email")?.hasError('required')) {
+                      <mat-error>email is <strong>required</strong></mat-error>
+                    }
+                  </mat-form-field>
+              </div>
+
+              <!-- Password input -->
+              <div data-mdb-input-init class="form-outline mb-4">
+
+              <mat-form-field class="formField">
+                <mat-label>Password</mat-label>
+                <input type="password" formControlName="password"  [type]="hide() ? 'password' : 'text'" [errorStateMatcher]="matcher"  matInput placeholder="user password">
+                <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide()">
+                  <mat-icon>{{hide() ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+                @if (UserForm.get("password")?.hasError('required')) {
+                    <mat-error>Password must be at least 6 characters <strong>6 characters</strong></mat-error>
+                }
+            </mat-form-field>
+
+                @if(ErrorMessage != ''){
+                  <mat-error class="text-danger formField "><strong>{{ErrorMessage}}</strong></mat-error>
+                  }
+              </div>
+              <button mat-raised-button color="primary" type="submit" class="submit-button" [disabled]="!UserForm.valid">
+                Sign In
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Section: Design Block -->
+<div class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary footer">
+    <!-- Copyright -->
+    <div class="text-white mb-3 mb-md-0">
+      Copyright © 2025. All rights reserved.
+    </div>
+    <!-- Copyright -->
+</div>
+

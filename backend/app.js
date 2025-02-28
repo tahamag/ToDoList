@@ -28,7 +28,7 @@ app.get('/' , (req, res)=>{
 app.post('/signup', userController.signup);
 
 // Route for sign in
-app.get('/signin', userController.signin);
+app.post('/signin', userController.signin);
 
 
 // Route for get all users
@@ -50,11 +50,11 @@ app.post('/tasks', taskController.addTasks);
 // Route for add tasks
 app.get('/tasks', taskController.getTasks);
 
-// Route for update tasks
-app.put('/tasks/:tasksId', taskController.updateTask);
+// Route for update status
+app.put('/status', taskController.updateTaskStatus);
 
 // Route for update tasks
-app.put('/status/:status', taskController.updateTaskStatus);
+app.put('/tasks/:tasksId', taskController.updateTask);
 
 // route for deleting task
 app.delete('/tasks/:tasksId', taskController.deleteTask);

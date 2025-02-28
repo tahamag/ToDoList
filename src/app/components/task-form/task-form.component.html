@@ -24,7 +24,6 @@
     <mat-datepicker-toggle matIconSuffix [for]="date"></mat-datepicker-toggle>
     <mat-datepicker #date disabled="false"></mat-datepicker>
     @if (taskForm.get("taskDate")?.hasError('required')) {
-      <mat-error>task date is <strong>required</strong></mat-error>
     }
   </mat-form-field>
 
@@ -63,7 +62,7 @@
 
   <div  class="actions">
     <button mat-button type="button"
-            class="cancel-button"  
+            class="cancel-button"
             (click)="onCancel()">
       Cancel
     </button>

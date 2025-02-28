@@ -4,14 +4,13 @@
     margin-left: 3em;
     border-radius: 2px;
   }
-  
-  .title{
-    margin: 1em;
-  }
-  
-  .actions
-  {
-    position: absolute;
-    right: 16%;
-  }
-  
+
+.title{
+  margin: 1em;
+}
+
+.actions
+{
+  position: absolute;
+  right: 16%;
+}

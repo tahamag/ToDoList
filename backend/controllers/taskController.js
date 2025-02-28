@@ -35,6 +35,7 @@ exports.addTasks = async (req, res) => {
 };
 
 //get all tasks
+
 exports.getTasks = async (req, res) => {
 
     try {
@@ -104,12 +105,13 @@ exports.updateTask  = async (req, res) => {
 };
 
 // Update task status
+/*
 exports.updateTaskStatus = async (req, res) => {
-    console.log("your are in  status update")
-    const { status  } = req.params;
-    const { tasks } = req.body; // Expecting an array of task objects
+    //const { status  } = req.params;
+    const { tasks ,status } = req.body; // Expecting an array of task objects
 
-    console.log(task)
+    console.log(tasks)
+    console.log(status)
     // Validate input
     if (!Array.isArray(tasks) || tasks.length === 0) {
         return res.status(400).json({
@@ -120,15 +122,15 @@ exports.updateTaskStatus = async (req, res) => {
 
     try {
         const updatePromises = tasks.map(async (task) => {
-            const { idTask, validationDate } = task;
+            const { _id, validationDate } = task;
 
             // Validate each task object
-            if (!idTask || !status || !validationDate) {
-                throw new Error("Each task must have idTask, status, and validation Date");
+            if (!_id || !status || !validationDate) {
+                throw new Error("Each task must have _id, status, and validation Date");
             }
             // Update the task in the database
             return await Tasks.findByIdAndUpdate(
-                idTask,
+                _id,
                 { status, validationDate }, // Update fields
                 { new: true, runValidators: true } // Return the updated document and run validators
             );
@@ -156,7 +158,9 @@ exports.updateTaskStatus = async (req, res) => {
             message: error.message,
         });
     }
-};
+};*/
+
+
 
 // Delete task
 exports.deleteTask  = async (req, res) => {
@@ -183,3 +187,85 @@ exports.deleteTask  = async (req, res) => {
         });
     }
 };
+
+
+/*
+exports.updateTaskStatus = async (req, res) => {
+
+  // Validate input
+  if (!Array.isArray(req.body) || req.body.length === 0) {
+      return res.status(400).json({
+          success: false,
+          message: "Please provide an array of tasks to update",
+      });
+  }
+
+  try {
+        req.body.map(async (task) => {
+          const { _id,status, validationDate } = task;
+          console.log(_id , status , validationDate)
+          const updatedTask  = Tasks.findByIdAndUpdate(
+            _id,
+            { status }, // Update fields
+            { new: true, runValidators: true } // Return the updated document and run validators
+          )
+          if (!updatedTask ) {
+              return res.status(404).json({
+                  success: false,
+                  message: "Task not found",
+              });
+          }
+        })
+
+        res.status(200).json({
+            success: true,
+            tasks: "okeay"
+        });
+  } catch (error) {
+      res.status(400).json({
+          success: false,
+          message: error.message,
+      });
+  }
+};*/
+
+exports.updateTaskStatus = async (req, res) => {
+  // Validate input
+  if (!Array.isArray(req.body) || req.body.length === 0) {
+      return res.status(400).json({
+          success: false,
+          message: "Please provide an array of tasks to update",
+      });
+  }
+
+  try {
+      // Use Promise.all to wait for all updates to complete
+      const updatePromises = req.body.map(async (task) => {
+          const { _id, status, validationDate } = task;
+
+          const updatedTask = await Tasks.findByIdAndUpdate(
+              _id,
+              { status, validationDate }, // Update fields
+              { new: true, runValidators: true } // Return the updated document and run validators
+          );
+          if (!updatedTask) {
+              throw new Error(`Task with ID ${_id} not found`);
+          }
+          return updatedTask; // Return the updated task
+      });
+
+      // Wait for all updates to complete
+      const updatedTasks = await Promise.all(updatePromises);
+
+      res.status(200).json({
+          success: true,
+          tasks: updatedTasks // Return the updated tasks
+      });
+  } catch (error) {
+      res.status(400).json({
+          success: false,
+          message: error.message,
+      });
+  }
+};
+
