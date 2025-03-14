@@ -64,8 +64,8 @@ export class LoginComponent {
   }
 
   Redirect(){
-    //alert(sessionStorage?.getItem('user'))
-    this.router.navigate(['/home']);
+   // this.router.navigate(['/home']);
+    window.location.href = '/home';
   }
 
   clickEvent(event: MouseEvent) {

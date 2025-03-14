@@ -1,6 +1,4 @@
-import { UserService } from './../../services/user/user.service';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Component, Inject, inject, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormGroupDirective, FormsModule, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,102 +9,85 @@ import { User } from '../../models/user';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatIconModule } from '@angular/material/icon';
+import { UserService } from '../../services/user/user.service';
+
 
 @Component({
-  selector: 'app-user-form',
+  selector: 'app-profile',
   imports: [
-    FormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    ReactiveFormsModule,
-    MatDatepickerModule,
-    MatAutocompleteModule,
-    MatButtonModule,
-    MatRadioModule,
-    MatIconModule
-  ],
-  templateUrl: './user-form.component.html',
-  styleUrl: './user-form.component.css'
+      FormsModule,
+      MatFormFieldModule,
+      MatInputModule,
+      ReactiveFormsModule,
+      MatDatepickerModule,
+      MatAutocompleteModule,
+      MatButtonModule,
+      MatRadioModule,
+      MatIconModule
+    ],
+  templateUrl: './profile.component.html',
+  styleUrl: './profile.component.css'
 })
-export class UserFormComponent {
-  users : User[] = [];
+export class ProfileComponent {
+  user! : User ;
   UserForm : FormGroup;
-  isEditing = false;
   CurrentUserId !: string;
   ErrorMessage : string = "";
-  readonly dialogRef = inject(MatDialogRef<UserFormComponent>);
+  hide = signal(true);
 
   constructor(
     private UserService  : UserService,
     private fb : FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: {user : User }
-
   ){
     this.UserForm = this.fb.group({
       name : ['', [Validators.required , Validators.maxLength(30)] ],
       email : ['', [Validators.required , Validators.email] ],
-      password : ['', ] ,
-      role : ['Project manager',[Validators.required]]
+      password : ['', ],
+      role : ['', ],
     })
-
-    if(data && data.user){
-      this.isEditing = true;
-      this.editUser(data.user);
-
-    }
-
+    this.getUser();
   }
 
-  editUser(user : User):void{
-    this.isEditing = true;
-    this.UserForm.get("password")?.disable();
-    this.CurrentUserId = user._id!;
+  getUser():void{
+
+    const userData = sessionStorage.getItem('user');
+    if (userData)
+      this.user = JSON.parse(userData);
+    else
+      window.location.href = '/login';
+
+    //this.UserForm.get("password")?.disable();
+    this.CurrentUserId = this.user._id!;
     this.UserForm.patchValue({
-      name : user.name ,
-      email : user.email,
-      role :user.role
+      name : this.user.name ,
+      email : this.user.email
     });
   }
 
   onSubmit():void{
     if(this.UserForm.invalid)
       return ;
-    const user : User = this.UserForm.value;
-    if(this.isEditing){
-      user._id = this.CurrentUserId
-      this.UserService.updateUser(user)
-      .subscribe(
-        ()=>this.onCancel()
-        );
-
-    }else{
-      this.UserService.createUser(user).subscribe({
-        next :()=>this.onCancel(),
+    const updateUser : User = this.UserForm.value;
+      updateUser._id = this.CurrentUserId
+      this.UserService.updateUser(updateUser)
+      .subscribe({
+        next :(res : any)=>{
+          sessionStorage.setItem('user' , JSON.stringify(res.user));
+          window.location.href = '/profile';
+        },
         error:(err)=> {
             console.log(err.error);
             this.ErrorMessage = err.error.message;
         },
-      })
-    }
+      },
+      );
+      console.log(updateUser)
   }
 
-  onCancel(){
-    this.resetForm()
-    this.dialogRef.close();
-  }
-
-  resetForm(): void {
-    this.isEditing = false;
-    this.ErrorMessage = '';
-    this.UserForm.reset();
-  }
-
-  hide = signal(true);
   clickEvent(event: MouseEvent) {
     this.hide.set(!this.hide());
     event.stopPropagation();
   }
-
   matcher = new MyErrorStateMatcher();
 }
 

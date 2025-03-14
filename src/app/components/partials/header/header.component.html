@@ -1,10 +1,10 @@
 <!---->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light"  >
   <a class="navbar-brand" href="#">MTM</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div class="collapse navbar-collapse  navbar" style="background-color: #e3f2fd;" id="navbarNav" >
+  <div class="collapse navbar-collapse  navbar"id="navbarNav" >
     <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link" routerLink="/home" routerLinkActive="active">Home</a>
@@ -19,26 +19,30 @@
         <a  class="nav-link" routerLink="/toDo"  routerLinkActive="active">to Do</a>
       </li>
     </ul>
-
+    @if(user){
     <button mat-raised-button [cdkMenuTriggerFor]="menu" class="example-standalone-item btn-profile">
-        {{user.name}}
+        {{ user.name}}
     </button>
 
     <ng-template #menu>
       <div class="example-menu" cdkMenu>
-        <button cdkMenuItemCheckbox class="example-menu-item">
+        <button cdkMenuItemCheckbox class="example-menu-item" (click)="navigateToProfile()">
             <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="person"> </mat-icon>
             Profile
         </button>
 
-        <button cdkMenuItemCheckbox class="example-menu-item">
+        <button cdkMenuItemCheckbox class="example-menu-item" (click)="logout()">
           <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="logout"> </mat-icon>
           Logout
         </button>
 
       </div>
     </ng-template>
-
+  }@else{
+    <button  class="example-standalone-item btn-profile" (click)="login()">
+      Login
+    </button>
+  }
 
 
 

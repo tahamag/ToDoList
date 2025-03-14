@@ -49,6 +49,7 @@ app.post('/tasks', taskController.addTasks);
 
 // Route for add tasks
 app.get('/tasks', taskController.getTasks);
+app.get('/tasks/:UserId', taskController.getTasks);
 
 // Route for update status
 app.put('/status', taskController.updateTaskStatus);

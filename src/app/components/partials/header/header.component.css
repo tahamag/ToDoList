@@ -29,3 +29,8 @@
   /*flex: 1;*/
   margin-right: 7%;
 }
+
+.bg-light
+{
+  background-color: #e3f2fd !important;
+}

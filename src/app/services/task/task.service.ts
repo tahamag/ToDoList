@@ -26,6 +26,17 @@ export class TaskService {
     )
   }
 
+  getTasksByUser(userId : string): Observable<Task> {
+    return this.http.get<Task>(`${this.apiUrl}/tasks/`+userId)
+    .pipe(
+      map((tasks : Task)=>tasks),
+      catchError((error)=>{
+        console.error('error tasks service', error)
+        return throwError(() => error);
+      }),
+    )
+  }
+
 
   addTask(task: Omit<Task , "id">): Observable<Task>{
     return this.http.post<Task>(this.apiUrl+"/tasks" , task).pipe(

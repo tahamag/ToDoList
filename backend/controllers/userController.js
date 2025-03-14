@@ -1,5 +1,6 @@
 // userController.js
 const User = require('../models/user');
+const bcrypt = require('bcryptjs/dist/bcrypt');
 
 // add new user
 exports.signup = async (req, res) => {
@@ -119,23 +120,42 @@ exports.getDeveloppers = async (req, res) => {
     }
 };
 
-// Update User
+ //Update User
 exports.updateUser  = async (req, res) => {
     const { userId } = req.params; // Assuming userId is passed as a URL parameter
-    const { email, name  , role } = req.body; // Get the fields you want to update
-
-    // Validate input
-    if (!email && !name  && !role) {
-        return res.status(401).json({
-            success: false,
-            message: "Please provide at least one field to update (email, name ).",
-        });
-    }
+    const { email, name, role, password } = req.body; // Get the fields you want to update
+    let updatedUser ;
 
     try {
-        const updatedUser  = await User.findByIdAndUpdate(
+        // Prepare the update object
+        const updateData = { email, name };
+
+        // If a new password is provided, hash it
+        if (password) {
+          if(!/^(?=.*[a-z])(?=.*[A-Z]).{6,}$/.test(password)){
+              return res.status(401).json({
+                  success: false,
+                  message: "Password must contain at least 1 uppercase letter, 1 lowercase letter, at least 6 characters length",
+              });
+          }else
+            updateData.password = await bcrypt.hash(password, 10);
+        }
+
+        // If a role is provided, add it to the update object
+        if (role) {
+          if(role !="Project manager" && role!='Developer'){
+            return res.status(401).json({
+                success: false,
+                message: "Role should be Project manager or Developer",
+            });
+          }else
+            updateData.role = role;
+        }
+
+        // Update the user
+        updatedUser  = await User.findByIdAndUpdate(
             userId,
-            { email, name  , role}, // Update fields
+            updateData, // Update fields
             { new: true, runValidators: true } // Return the updated document and run validators
         );
 

@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-to-do',
@@ -22,7 +23,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
       MatFormFieldModule,
       MatInputModule,
       ReactiveFormsModule,
-      MatButtonModule,],
+      MatButtonModule,
+      CommonModule],
   templateUrl: './to-do.component.html',
   styleUrl: './to-do.component.css'
 })
@@ -37,38 +39,65 @@ export class ToDOComponent  {
   pending :Task[] = [];
   inprogress?: Task[] =[]
   completed?: Task[] =[]
-  test?: Task[] =[]
+  isDeveloper: boolean = false;
+  user: any;
 
-
-    constructor(
-      private fb : FormBuilder,
-    ) {
-      this.taskForm = this.fb.group({
-        title : [''],
-        description : [''],
-        taskDate : [''],
-        validationDate : [''],
-      });
-    }
+  constructor(
+    private fb : FormBuilder,
+  ) {
+    this.taskForm = this.fb.group({
+      title : [''],
+      description : [''],
+      taskDate : [''],
+      validationDate : [''],
+    });
+  }
 
   ngOnInit(): void {
+    this.VerifyRole();
     this.getTasks();
   }
 
 
-  getTasks(){
-    this.TS.getTasks().subscribe({
-      next :(response : any)=>{
-        this.task$.next(response.tasks);
+  VerifyRole(): void {
+    const userData = sessionStorage.getItem('user');
+    if (userData) {
+      this.user = JSON.parse(userData);
+      this.isDeveloper = this.user.role === 'Developer';
+    }
+  }
 
-        this.pending = this.task$.value.filter(task => task.status === 'pending');
-        this.inprogress = this.task$.value.filter(task => task.status === 'in-progress');
-        this.completed = this.task$.value.filter(task => task.status === 'completed');
-      },
-      error:(err : any)=>{
-        console.log(err.error);
-      }
-    })
+  getTasks(){
+    const userSession = sessionStorage.getItem('user');
+    const user = JSON.parse(userSession!);
+    if(user.role === 'Project manager'){
+      this.TS.getTasks().subscribe({
+        next :(response : any)=>{
+          this.task$.next(response.tasks);
+
+          this.pending = this.task$.value.filter(task => task.status === 'pending');
+          this.inprogress = this.task$.value.filter(task => task.status === 'in-progress');
+          this.completed = this.task$.value.filter(task => task.status === 'completed');
+        },
+        error:(err : any)=>{
+          console.log(err.error);
+        }
+      })
+
+    }else{
+      this.TS.getTasksByUser(user._id).subscribe({
+        next :(response : any)=>{
+          this.task$.next(response.tasks);
+
+          this.pending = this.task$.value.filter(task => task.status === 'pending');
+          this.inprogress = this.task$.value.filter(task => task.status === 'in-progress');
+          this.completed = this.task$.value.filter(task => task.status === 'completed');
+        },
+        error:(err : any)=>{
+          console.log(err.error);
+        }
+      })
+    }
   }
 
   drop(event: any) {

@@ -17,24 +17,41 @@
                 maxlength: [80, 'email  cannot be more than 80 characters'],
                 unique: [true , 'email should not be duplicated'],
                 match: [
-                    /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 
+                    /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
                     'Please add a valid E-mail'
                 ]
             },
             password :{
                 type : String,
                 trim: true,
-                required: [true, 'Please add a Password'],
-                minlength: [6, 'password must have at least six(6) characters'],
                 match: [
-                    /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/, 
+                    /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/,
                     'Password must contain at least 1 uppercase letter, 1 lowercase letter, at least 6 characters length'
-                ]
+                ],
+                validate: {
+                    validator: function(value) {
+                        // Only validate if the password is being set
+                        if (this.isNew) {
+                            return value != null && value.length > 0; // Check if password is provided
+                        }
+                        return true; // Skip validation for updates if password is not provided
+                    },
+                    message: 'Please add a Password'
+                }
             },
             role :{
                 type : String,
                 trim: true,
-                required: [true, 'Please select Role'],
+                validate: {
+                  validator: function(value) {
+                      // Only validate if the role is being set
+                      if (this.isNew) {
+                          return value != null && value.length > 0; // Check if role is provided
+                      }
+                      return true; // Skip validation for updates if role is not provided
+                  },
+                  message: 'Please select Role'
+              }
             },
         },
         {
@@ -45,7 +62,7 @@
     // encrypting password before saving
     UserSchema.pre('save', async function(next) {
         if (!this.isModified('password')) {
-            next();
+            return next();
         }
         this.password = await bcrypt.hash(this.password, 10);
     });

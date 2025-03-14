@@ -1,6 +1,7 @@
 // taskController.js
 const Tasks = require('../models/tasks');
-
+const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Types;
 // add new task
 exports.addTasks = async (req, res) => {
     const { title } = req.body;
@@ -34,12 +35,17 @@ exports.addTasks = async (req, res) => {
     }
 };
 
-//get all tasks
+//get all tasks or by developper
 
 exports.getTasks = async (req, res) => {
-
     try {
-        const tasks  = await Tasks.find({}).populate('userId', 'name _id');;
+        const {UserId} = req.params;
+        let tasks;
+        if(UserId){
+          tasks  = await Tasks.find({userId: new ObjectId(UserId)}).populate('userId', 'name _id');
+        }else
+          tasks  = await Tasks.find().populate('userId', 'name _id');
+
         res.status(201).json({
             success: true,
             tasks,
@@ -53,8 +59,8 @@ exports.getTasks = async (req, res) => {
     }
 };
 
+
 // Update task
-// task(title, description, taskDate, status, validationDate, user)
 exports.updateTask  = async (req, res) => {
     const { tasksId } = req.params; // Assuming taskId is passed as a URL parameter
     const { title, description, taskDate, status, validationDate, userId} = req.body; // Get the fields you want to update
@@ -104,62 +110,6 @@ exports.updateTask  = async (req, res) => {
     }
 };
 
-// Update task status
-/*
-exports.updateTaskStatus = async (req, res) => {
-    //const { status  } = req.params;
-    const { tasks ,status } = req.body; // Expecting an array of task objects
-
-    console.log(tasks)
-    console.log(status)
-    // Validate input
-    if (!Array.isArray(tasks) || tasks.length === 0) {
-        return res.status(400).json({
-            success: false,
-            message: "Please provide an array of tasks to update",
-        });
-    }
-
-    try {
-        const updatePromises = tasks.map(async (task) => {
-            const { _id, validationDate } = task;
-
-            // Validate each task object
-            if (!_id || !status || !validationDate) {
-                throw new Error("Each task must have _id, status, and validation Date");
-            }
-            // Update the task in the database
-            return await Tasks.findByIdAndUpdate(
-                _id,
-                { status, validationDate }, // Update fields
-                { new: true, runValidators: true } // Return the updated document and run validators
-            );
-        });
-
-        const updatedTasks = await Promise.all(updatePromises);
-
-        // Filter out any null results (tasks that were not found)
-        const successfulUpdates = updatedTasks.filter(task => task !== null);
-
-        if (successfulUpdates.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: "No tasks found to update",
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            tasks: successfulUpdates,
-        });
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};*/
-
 
 
 // Delete task
@@ -188,46 +138,6 @@ exports.deleteTask  = async (req, res) => {
     }
 };
 
-
-/*
-exports.updateTaskStatus = async (req, res) => {
-
-  // Validate input
-  if (!Array.isArray(req.body) || req.body.length === 0) {
-      return res.status(400).json({
-          success: false,
-          message: "Please provide an array of tasks to update",
-      });
-  }
-
-  try {
-        req.body.map(async (task) => {
-          const { _id,status, validationDate } = task;
-          console.log(_id , status , validationDate)
-          const updatedTask  = Tasks.findByIdAndUpdate(
-            _id,
-            { status }, // Update fields
-            { new: true, runValidators: true } // Return the updated document and run validators
-          )
-          if (!updatedTask ) {
-              return res.status(404).json({
-                  success: false,
-                  message: "Task not found",
-              });
-          }
-        })
-
-        res.status(200).json({
-            success: true,
-            tasks: "okeay"
-        });
-  } catch (error) {
-      res.status(400).json({
-          success: false,
-          message: error.message,
-      });
-  }
-};*/
 
 exports.updateTaskStatus = async (req, res) => {
   // Validate input

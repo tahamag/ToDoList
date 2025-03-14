@@ -1,4 +1,4 @@
-import { Component, OnInit , } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit , } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {
@@ -23,8 +23,7 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class HeaderComponent implements OnInit {
   isDeveloper: boolean = false;
-  user!: any;
-
+  user: any;
 
   constructor(private router: Router) {
   }
@@ -39,8 +38,7 @@ export class HeaderComponent implements OnInit {
     const userData = sessionStorage.getItem('user');
     if (userData) {
       this.user = JSON.parse(userData);
-      this.isDeveloper = this.user.role === 'developer';
-      console.log(this.isDeveloper)
+      this.isDeveloper = this.user.role === 'Project manager';
     }
   }
 
@@ -49,7 +47,12 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
-    console.log('User  logged out');
+    sessionStorage.clear();
+    //this.router.navigate(['/login']);
+    window.location.href = '/login';
+  }
+
+  login(){
     this.router.navigate(['/login']);
   }
 }
