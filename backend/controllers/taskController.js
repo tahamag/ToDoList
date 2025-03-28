@@ -111,12 +111,22 @@ exports.updateTask  = async (req, res) => {
 };
 
 
-
+//db.tasks.find({userId:ObjectId('67483cece7a689e1b2d95f52')})
 // Delete task
 exports.deleteTask  = async (req, res) => {
     const { tasksId } = req.params; // Assuming taskId is passed as a URL parameter
 
     try {
+        const VerifyTask = await Tasks.findOne({_id: new ObjectId(tasksId) , status : {$ne : 'pending'} })
+        if(VerifyTask){
+          console.log(VerifyTask.status)
+          return res.status(201).json({
+              success: false,
+              message: "you can not delete this task, it has the status : "+VerifyTask.status ,
+          });
+
+        }
+
         const deletedTask  = await Tasks.findByIdAndDelete(tasksId);
 
         if (!deletedTask ) {
