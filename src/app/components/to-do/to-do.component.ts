@@ -123,7 +123,8 @@ export class ToDOComponent  {
     this.isVisible = true;
   }
   Save(){
-    if (this.inprogress) {
+    if (this.inprogress && this.inprogress?.length>0) {
+
       const tasksToUpdate = this.inprogress.map(task => ({
         _id: task._id,
         validationDate: task.validationDate,
@@ -138,11 +139,10 @@ export class ToDOComponent  {
           console.error('Error updating in-progress tasks:', err);
         }
       });
-
-
     }
 
-    if (this.completed) {
+    if (this.completed  && this.completed?.length>0) {
+
       const tasksToUpdate = this.completed
       .filter(task => task.validationDate === null)
       .map(task => ({
@@ -151,14 +151,16 @@ export class ToDOComponent  {
         status : "completed"
       }));
 
-      this.TS.updateStatus(tasksToUpdate).subscribe({
-        next : (response : any)=>{
-          console.log('completed tasks updated:', response);
-        },
-        error:(err)=> {
-          console.error('Error updating completed tasks:', err);
-        }
-      });
+      if(tasksToUpdate.length>0){
+        this.TS.updateStatus(tasksToUpdate).subscribe({
+          next : (response : any)=>{
+            console.log('completed tasks updated:', response);
+          },
+          error:(err)=> {
+            console.error('Error updating completed tasks:', err);
+          }
+        });
+      }
     }
 
     this.getTasks();

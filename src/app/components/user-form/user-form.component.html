@@ -3,7 +3,7 @@
     {{isEditing ? 'Update User' :'Add User'}}
 </h2>
 
-<form class="form" (ngSubmit)="onSubmit()"  [formGroup]="UserForm">
+<form class="form" [formGroup]="UserForm">
     <!--   name  email  password role  -->
     <mat-form-field class="formField">
         <mat-label>Name</mat-label>
@@ -48,6 +48,7 @@
         <button mat-raised-button color="primary"
                 type="submit"
                 [disabled]="!UserForm.valid"
+                (click)="onSubmit()"
                 class="submit-button">
         {{isEditing ? 'Update' :'Create'}}
         </button>

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormGroupDirective, FormsModule, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,7 +10,7 @@ import { ErrorStateMatcher } from '@angular/material/core';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatIconModule } from '@angular/material/icon';
 import { UserService } from '../../services/user/user.service';
-
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-profile',
@@ -23,7 +23,7 @@ import { UserService } from '../../services/user/user.service';
       MatAutocompleteModule,
       MatButtonModule,
       MatRadioModule,
-      MatIconModule
+      MatIconModule ,
     ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
@@ -34,6 +34,7 @@ export class ProfileComponent {
   CurrentUserId !: string;
   ErrorMessage : string = "";
   hide = signal(true);
+  private _snackBar: any;
 
   constructor(
     private UserService  : UserService,
@@ -56,7 +57,6 @@ export class ProfileComponent {
     else
       window.location.href = '/login';
 
-    //this.UserForm.get("password")?.disable();
     this.CurrentUserId = this.user._id!;
     this.UserForm.patchValue({
       name : this.user.name ,
@@ -73,15 +73,18 @@ export class ProfileComponent {
       .subscribe({
         next :(res : any)=>{
           sessionStorage.setItem('user' , JSON.stringify(res.user));
-          window.location.href = '/profile';
+          this._snackBar.open("update completed successfully", "Hide");
+         // window.location.href = '/profile';
         },
         error:(err)=> {
             console.log(err.error);
+            this._snackBar.open("usomething went wrong", "Hide");
             this.ErrorMessage = err.error.message;
         },
       },
       );
-      console.log(updateUser)
+      //console.log(updateUser)
+      this._snackBar.open("update completed successfully", "Hide");
   }
 
   clickEvent(event: MouseEvent) {

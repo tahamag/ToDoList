@@ -29,7 +29,7 @@
 
   <mat-form-field class="formField">
     <mat-label>status</mat-label>
-    <input type="text" matInput formControlName="status"  [errorStateMatcher]="matcher"  placeholder="Task status">
+    <input type="text" matInput formControlName="status" enabled [errorStateMatcher]="matcher"  placeholder="Task status">
     @if (taskForm.get("status")?.hasError('required')) {
       <mat-error>status is <strong>required</strong></mat-error>
     }

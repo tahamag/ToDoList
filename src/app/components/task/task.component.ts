@@ -9,6 +9,8 @@ import {MatTableModule} from '@angular/material/table';
 import { TaskFormComponent } from '../task-form/task-form.component';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 
 @Component({
@@ -19,7 +21,9 @@ import { BehaviorSubject } from 'rxjs';
     MatGridListModule,
     MatListModule,
     MatTableModule,
-    MatDialogModule],
+    MatDialogModule,
+    MatFormFieldModule,
+  ],
   templateUrl: './task.component.html',
   styleUrl: './task.component.css'
 })
@@ -28,6 +32,7 @@ export class TaskComponent implements OnInit  {
 
   TS = inject(TaskService)
   dialog = inject(MatDialog);
+  private _snackBar = inject(MatSnackBar);
 
   task$: BehaviorSubject<Task[]> = new BehaviorSubject<Task[]>([]);
 
@@ -46,7 +51,7 @@ export class TaskComponent implements OnInit  {
       this.getTasks();
     })
   }
-  
+
 
   constructor( private TaskService : TaskService,){}
   ngOnInit(): void {
@@ -64,17 +69,30 @@ export class TaskComponent implements OnInit  {
     })
   }
 
-
   OnUpdate(task : Task){
     this.openDialog(task)
+
   }
 
-  
   OnDelete(id : string){
     if(confirm('are u sure you want to delete this task')){
-      this.TaskService.deleteTask(id).subscribe(()=>{
-        this.getTasks();
+      this.TaskService.deleteTask(id).subscribe({
+        next :(response : any)=>{
+          if(!response.success)
+            this._snackBar.open(response.message, "close");
+          else{
+            this.getTasks();
+            this._snackBar.open(response.message, "close");
+          }
+        },
+        error:(err : any)=>{
+          console.log(err.error);
+        }
       })
     }
+  }
+
+  FormatDate(date? : Date ){
+    return date?  new Date(date).getDay() + '/' + new Date(date).getMonth() + '/' + new Date(date).getFullYear()  : ''
   }
 }

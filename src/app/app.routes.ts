@@ -10,8 +10,8 @@ import { UnauthorizedComponent } from './components/unauthorized/unauthorized.co
 import { ProfileComponent } from './components/profile/profile.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'home', component: HomeComponent },
+  { path: '', redirectTo: 'toDo', pathMatch: 'full' },
+  //{ path: 'home', component: HomeComponent },
   { path: 'users', component: UsersComponent , canActivate : [authGuard] ,data :{ role :'Project manager'} },
   { path: 'task', component: TaskComponent , canActivate : [authGuard] ,data :{ role :'Project manager'} },
   { path: 'toDo', component: ToDOComponent , canActivate : [authGuard] ,data :{ role :['Project manager', 'Developer']}},

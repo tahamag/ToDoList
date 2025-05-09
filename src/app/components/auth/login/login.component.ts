@@ -39,8 +39,8 @@ export class LoginComponent {
     private router: Router
   ){
     this.UserForm = this.fb.group({
-      email : ['majidi@mail.com', [Validators.required , Validators.email] ],
-      password : ['Majidi@11',[Validators.required ]] ,
+      email : ['', [Validators.required , Validators.email] ],
+      password : ['',[Validators.required ]] ,
     })
   }
 
@@ -65,7 +65,7 @@ export class LoginComponent {
 
   Redirect(){
    // this.router.navigate(['/home']);
-    window.location.href = '/home';
+    window.location.href = '/toDo';
   }
 
   clickEvent(event: MouseEvent) {

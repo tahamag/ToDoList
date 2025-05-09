@@ -101,9 +101,11 @@ export class TaskFormComponent implements OnInit {
     }
 
   }
+
   editTask(task : Task):void{
     this.isEditing = true;
     this.CurrentTaskId = task._id!;
+    this.taskForm.get("status")?.enable()
     this.taskForm.patchValue({
       title : task.title ,
       description : task.description ,
@@ -111,6 +113,7 @@ export class TaskFormComponent implements OnInit {
       status : task.status ,
     });
   }
+
   statusValidator(control : AbstractControl) : ValidationErrors | null{
     return control.value === 'pending' ? null :{statusInvalid:true}
   }
